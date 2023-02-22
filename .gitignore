@@ -1,6 +1,6 @@
 .idea
 results
-wyniki
+wyniki/
 analiza_mezczyzn.py
 analiza_kobiet.py
 do_zapisu.py

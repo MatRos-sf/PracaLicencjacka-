@@ -1,14 +1,21 @@
 import os
 import matplotlib.pyplot as plt
+import numpy
+from statsmodels.tsa.ar_model import AutoReg as AR
+
 
 MAIN_PATH_PATIENTS = ".\\patient"
 MAIN_PATH_RESULTS = ".\\results"
 
 
-def check_path_exists(path):
+def set_path(path, name_file):
+    # make sure path is exists
     if not os.path.exists(path):
         os.makedirs(path)
-    return True
+
+    return os.path.join(path, name_file)
+
+
 
 
 def create_plot(data, title, title_x, title_y, path_to_save):
@@ -18,12 +25,9 @@ def create_plot(data, title, title_x, title_y, path_to_save):
     plt.ylabel(title_y)
     plt.title(title)
 
+    path = set_path(path_to_save, title)
 
-    if check_path_exists(path_to_save):
-        path = os.path.join(path_to_save, title)
-        plt.savefig(path+'.jpg', dpi=80)
-
-
+    plt.savefig(path+'.jpg', dpi=80)
     plt.show()
 
 class Patient:
@@ -53,7 +57,7 @@ class Patient:
             raise NotImplementedError()
 
         create_plot(self.data, 'Tachograf', 'n', 'RR [ms]', self.result_path_save)
-        print(f"The tachogram has been saved to: '{self.result_path_save}' as a file named 'Tachogram.jpg'")
+        print(f"The tachogram has been saved to: '{self.result_path_save}' as a file name 'Tachogram.jpg'")
 
     def create_windows(self, quantity=1000):
         """
@@ -62,14 +66,53 @@ class Patient:
         """
         stop = len(self.data)
         for start in range(0, stop, quantity):
-            self.windows.append(self.data[start:min(start+quantity, stop)])
+            yield self.data[start:min(start+quantity, stop)]
+
+    def calculate_coef_AR(self,data):
+
+        train_model = numpy.array(data)
+        model = AR(train_model/1000, lags=8)
+        model_fit = model.fit()
+        coef = model_fit.params
+
+        return coef
+
+    def create_coef_AR(self):
+        """
+        Create file and plot with coef
+        :return:
+        """
+        coefs = []
+
+        for index, window in enumerate(self.create_windows()):
+
+            coef = self.calculate_coef_AR(window)
+            plt.plot(numpy.arange(1,6), coef[:5], label=f'coafs {index}')
+            coefs.append(coef)
+
+        plt.legend(ncol=3, fontsize='x-small').set_title('Individual coefficients of a given window')
+        plt.title("Windows with coefficients")
+        plt.xticks(numpy.arange(1,6))
+
+        path = set_path(self.result_path_save, 'Coefs')
+        plt.savefig(path + '.jpg', dpi=150)
+        plt.show()
+        print(f"The figure with five first coefficients has been saved to {self.result_path_save} as a file name cofes.jpg ")
+
+        # create file.txt with coefs
+        path = set_path(self.result_path_save, 'coefs')
+        with open(path+'.txt', 'w') as file:
+            for list in coefs:
+                for single_item in list:
+                    file.write(f"{single_item:.18}    ")
+                file.write('\n')
+
+
 
 a = Patient("k19_12.00.cut_500.txt")
-print(a.file_name)
-print(a.gender)
-print(a.age)
-print(a.id)
 a.get_data()
-a.create_tachogram()
+#a.create_tachogram()
+#print(a.calculate_coef_AR())
+a.create_coef_AR()
 
 

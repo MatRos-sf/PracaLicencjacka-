@@ -24,10 +24,12 @@ def tablica(kto):
 
 #funkcja wyliczająca współczynniki 
 def AR_function(train):
+
     t=np.array(train)
-    model=AR(t/1000, lags=4)
+    model=AR(t/1000, lags=8)
     model_fit=model.fit()
     coef=model_fit.params
+
     return coef
 
 #wzorce dla poszczególnych faz
@@ -87,24 +89,23 @@ if __name__=='__main__':
         if i+k > len(z):    #pliki nie są równe dlatego u niektórych pacjentów ostatnie okno może być mniejsze 
             k=len(z)-i
         coef=AR_function(z[i:i+k])      #tworzenie współczynników   
-        #plt.plot(np.arange(1,6),coef[:5])
+        plt.plot(np.arange(1,6),coef[:5])
         tab.append(coef)
-    print(tab)
-    # y=np.array(tab)
-    # plt.xticks(np.arange(1,6))
-    # plt.title("wspolczynniki dla "+who[:3] )
-    # plt.savefig("./wyniki/k/"+who+"/coef_"+who+'.jpg',dpi=80)
-    # print("Wykres z 5 pierwszymi współczynnikami znajduje się w: ./wyniki/k/ nazwa_pacjenta /")
-    # plt.show()
-    #
-    # #wpisywanie wspolczynnikow do pliku
-    # plik=open(path+who+'_wyniki_AR.txt', 'w')
-    # for i in range(len(y)):
-    #     for j in range(len(y[i])):
-    #           s=str(y[i][j])
-    #           plik.write(' %18s'%(s)+'%2s'%(' '))
-    #     plik.write('\n')
-    # plik.close()
+    y=np.array(tab)
+    plt.xticks(np.arange(1,6))
+    plt.title("wspolczynniki dla "+who[:3] )
+    plt.savefig("./wyniki/k/"+who+"/coef_"+who+'.jpg',dpi=80)
+    print("Wykres z 5 pierwszymi współczynnikami znajduje się w: ./wyniki/k/ nazwa_pacjenta /")
+    plt.show()
+
+    #wpisywanie wspolczynnikow do pliku
+    plik=open(path+who+'_wyniki_AR.txt', 'w')
+    for i in range(len(y)):
+        for j in range(len(y[i])):
+              s=str(y[i][j])
+              plik.write(' %18s'%(s)+'%2s'%(' '))
+        plik.write('\n')
+    plik.close()
     # print("Wszystkie współczynniki AR znajdują się w folderze: ./wyniki/k/ nazwa_pacjenta /")
     # # zmiana tab na array
     #
