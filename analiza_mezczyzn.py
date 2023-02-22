@@ -7,7 +7,7 @@ Program:
 
 import matplotlib.pyplot as plt
 import numpy as np
-from statsmodels.tsa.ar_model import AR
+from statsmodels.tsa.ar_model import AutoReg as AR
 import os
 import do_zapisu as d_z
 

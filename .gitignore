@@ -1,0 +1,10 @@
+.idea
+results
+wyniki
+analiza_mezczyzn.py
+analiza_kobiet.py
+do_zapisu.py
+porownanie_AR_fit.py
+patient
+venv
+__pycache__/

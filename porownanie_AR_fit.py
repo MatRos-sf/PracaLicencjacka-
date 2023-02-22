@@ -5,14 +5,14 @@ Porównanie funkcji AR oraz uproszczonego algorytmu metody fit() patrz dodaek C
 """
 
 import numpy as np
-from statsmodels.tsa.ar_model import AR
+from statsmodels.tsa.ar_model import AutoReg as AR
 
 
 def AR_function(train):
     t=np.array(train)
     model=AR(t)
     model_fit=model.fit()
-    coef=model_fit.params
+    coef = model_fit.params
     return coef
 
 from statsmodels.regression.linear_model import OLS

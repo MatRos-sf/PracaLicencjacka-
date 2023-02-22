@@ -7,6 +7,7 @@ Znajdują się tu funkcje zapisujące :
 """
 import matplotlib.pyplot as plt
 
+
 def Ilosc_faz_snu(who,tab):
     nrem=0
     rem=0

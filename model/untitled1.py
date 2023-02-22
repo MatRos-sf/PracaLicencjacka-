@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from statsmodels.tsa.ar_model import AR
+
 #funkcja wyliczająca współczynniki autoregresji 
 def AR_function(train):
     t=np.array(train)
