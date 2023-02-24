@@ -106,26 +106,26 @@ if __name__=='__main__':
               plik.write(' %18s'%(s)+'%2s'%(' '))
         plik.write('\n')
     plik.close()
-    # print("Wszystkie współczynniki AR znajdują się w folderze: ./wyniki/k/ nazwa_pacjenta /")
-    # # zmiana tab na array
-    #
-    # tab_arr=np.array(tab)
-    # # porównanie wykresu i wzorców  które opisałem w rozdziale 2.2.1
-    # nazwy=['NREM','REM']
-    # for ii in range(2):
-    #     kalka,sin=wzor(ii)
-    #     kalka=np.array(kalka)*2
-    # #wyszukiwanie największej liczby , oraz jej pozycji w tablicy
-    #     maks,pozycja=max_po_kolumnach(ii,tab_arr)           # wyszukiwanie najlepszego dopasowania dla wzorców
-    #     rozmiar_coef=len(kalka)
-    # #tworzenie wykresów porównawczych
-    #     plt.plot(np.arange(1,rozmiar_coef+1),tab_arr[pozycja])
-    #     plt.plot(np.arange(1,rozmiar_coef+1),kalka)
-    #     plt.xticks(np.arange(1,rozmiar_coef+1,2))
-    #     plt.title(nazwy[ii]+' , '+who[:3])
-    #     plt.legend([nazwy[ii],'test '+nazwy[ii]])
-    #     plt.savefig(path+who+'_plot_'+sin+'.jpg')
-    #     plt.show()
+    print("Wszystkie współczynniki AR znajdują się w folderze: ./wyniki/k/ nazwa_pacjenta /")
+    # zmiana tab na array
+
+    tab_arr=np.array(tab)
+    # porównanie wykresu i wzorców  które opisałem w rozdziale 2.2.1
+    nazwy=['NREM','REM']
+    for ii in range(2):
+        kalka,sin=wzor(ii)
+        kalka=np.array(kalka)*2
+    #wyszukiwanie największej liczby , oraz jej pozycji w tablicy
+        maks,pozycja=max_po_kolumnach(ii,tab_arr)           # wyszukiwanie najlepszego dopasowania dla wzorców
+        rozmiar_coef=len(kalka)
+    #tworzenie wykresów porównawczych
+        plt.plot(np.arange(1,rozmiar_coef+1),tab_arr[pozycja])
+        plt.plot(np.arange(1,rozmiar_coef+1),kalka)
+        plt.xticks(np.arange(1,rozmiar_coef+1,2))
+        plt.title(nazwy[ii]+' , '+who[:3])
+        plt.legend([nazwy[ii],'test '+nazwy[ii]])
+        plt.savefig(path+who+'_plot_'+sin+'.jpg')
+        plt.show()
     #
     # #tworzenie tablicy w której bedzie ilosć poszczegolnych faz
     # tab_ilosc_faz.append(d_z.Ilosc_faz_snu(who[:3],tab_arr))

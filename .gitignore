@@ -8,3 +8,5 @@ porownanie_AR_fit.py
 patient
 venv
 __pycache__/
+models/
+model/

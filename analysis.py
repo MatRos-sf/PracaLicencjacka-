@@ -8,17 +8,29 @@ MAIN_PATH_PATIENTS = ".\\patient"
 MAIN_PATH_RESULTS = ".\\results"
 
 
-def set_path(path, name_file):
+def set_path(path, *args):
     # make sure path is exists
-    if not os.path.exists(path):
-        os.makedirs(path)
+    new_path = os.path.join(path, *args)
+    if not os.path.exists(new_path):
+        os.makedirs(new_path)
 
-    return os.path.join(path, name_file)
+    return new_path
 
 
+def calculate_coef_AR(data: list, pretend=False):
 
+    train_model = numpy.array(data)
+    if pretend:
+        model = AR(train_model, lags=8)
+    else:
+        model = AR(train_model / 1000, lags=8)
 
-def create_plot(data, title, title_x, title_y, path_to_save):
+    model_fit = model.fit()
+    coef = model_fit.params
+
+    return coef
+
+def create_plot(data: list, title: str, title_x: str, title_y: str, path_to_save):
 
     plt.plot(data)
     plt.xlabel(title_x)
@@ -29,6 +41,15 @@ def create_plot(data, title, title_x, title_y, path_to_save):
 
     plt.savefig(path+'.jpg', dpi=80)
     plt.show()
+
+def create_windows(data, quantity=1000):
+    """
+    The function divides the data into windows of specified lengths.        :param quantity:
+    :param: quantity ( window length )
+    """
+    stop = len(data)
+    for start in range(0, stop, quantity):
+        yield data[start:min(start+quantity, stop)]
 
 class Patient:
 
@@ -59,23 +80,23 @@ class Patient:
         create_plot(self.data, 'Tachograf', 'n', 'RR [ms]', self.result_path_save)
         print(f"The tachogram has been saved to: '{self.result_path_save}' as a file name 'Tachogram.jpg'")
 
-    def create_windows(self, quantity=1000):
-        """
-        The function divides the data into windows of specified lengths.        :param quantity:
-        :param: quantity ( window length )
-        """
-        stop = len(self.data)
-        for start in range(0, stop, quantity):
-            yield self.data[start:min(start+quantity, stop)]
+    # def create_windows(self, quantity=1000):
+    #     """
+    #     The function divides the data into windows of specified lengths.        :param quantity:
+    #     :param: quantity ( window length )
+    #     """
+    #     stop = len(self.data)
+    #     for start in range(0, stop, quantity):
+    #         yield self.data[start:min(start+quantity, stop)]
 
-    def calculate_coef_AR(self,data):
-
-        train_model = numpy.array(data)
-        model = AR(train_model/1000, lags=8)
-        model_fit = model.fit()
-        coef = model_fit.params
-
-        return coef
+    # def calculate_coef_AR(self, data: list):
+    #
+    #     train_model = numpy.array(data)
+    #     model = AR(train_model/1000, lags=8)
+    #     model_fit = model.fit()
+    #     coef = model_fit.params
+    #
+    #     return coef
 
     def create_coef_AR(self):
         """
@@ -84,9 +105,9 @@ class Patient:
         """
         coefs = []
 
-        for index, window in enumerate(self.create_windows()):
+        for index, window in enumerate(create_windows(self.data)):
 
-            coef = self.calculate_coef_AR(window)
+            coef = calculate_coef_AR(window)
             plt.plot(numpy.arange(1,6), coef[:5], label=f'coafs {index}')
             coefs.append(coef)
 
@@ -108,11 +129,11 @@ class Patient:
                 file.write('\n')
 
 
-
-a = Patient("k19_12.00.cut_500.txt")
-a.get_data()
-#a.create_tachogram()
-#print(a.calculate_coef_AR())
-a.create_coef_AR()
+if __name__ == '__main__':
+    a = Patient("k19_12.00.cut_500.txt")
+    a.get_data()
+    #a.create_tachogram()
+    #print(a.calculate_coef_AR())
+    a.create_coef_AR()
 
 
