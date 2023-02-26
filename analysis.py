@@ -1,3 +1,4 @@
+import json
 import os
 import matplotlib.pyplot as plt
 import numpy
@@ -6,6 +7,7 @@ from statsmodels.tsa.ar_model import AutoReg as AR
 
 MAIN_PATH_PATIENTS = ".\\patient"
 MAIN_PATH_RESULTS = ".\\results"
+MAIN_PATH_MODELS = ".\\models"
 
 
 def set_path(path, *args):
@@ -37,10 +39,26 @@ def create_plot(data: list, title: str, title_x: str, title_y: str, path_to_save
     plt.ylabel(title_y)
     plt.title(title)
 
-    path = set_path(path_to_save, title)
+    path = os.path.join( set_path(path_to_save), title+".jpg")
 
-    plt.savefig(path+'.jpg', dpi=80)
+    plt.savefig(path, dpi=80)
     plt.show()
+
+def read_template_sleep():
+    try:
+        f = open(
+            os.path.join(MAIN_PATH_MODELS, "model.json")
+        )
+    except FileNotFoundError:
+        raise FileNotFoundError("File model.json doesn't exist. If you want to create this file, you should use script pattern.py")
+
+    data = json.load(f)
+
+    # get avg
+    avg_rem = data.get('REM').get("avg_coef")
+    avg_nonrem = data.get('nonREM').get("avg_coef")
+
+    return avg_rem, avg_nonrem
 
 def create_windows(data, quantity=1000):
     """
@@ -115,14 +133,14 @@ class Patient:
         plt.title("Windows with coefficients")
         plt.xticks(numpy.arange(1,6))
 
-        path = set_path(self.result_path_save, 'Coefs')
+        path = os.path.join(set_path(self.result_path_save), "Coefs.jpg")
         plt.savefig(path + '.jpg', dpi=150)
         plt.show()
         print(f"The figure with five first coefficients has been saved to {self.result_path_save} as a file name cofes.jpg ")
 
         # create file.txt with coefs
-        path = set_path(self.result_path_save, 'coefs')
-        with open(path+'.txt', 'w') as file:
+        path = os.path.join(set_path(self.result_path_save), "coefs.txt")
+        with open(path, 'w') as file:
             for list in coefs:
                 for single_item in list:
                     file.write(f"{single_item:.18}    ")
@@ -130,10 +148,12 @@ class Patient:
 
 
 if __name__ == '__main__':
-    a = Patient("k19_12.00.cut_500.txt")
-    a.get_data()
-    #a.create_tachogram()
-    #print(a.calculate_coef_AR())
-    a.create_coef_AR()
+    # a = Patient("k19_12.00.cut_500.txt")
+    # a.get_data()
+    # #a.create_tachogram()
+    # #print(a.calculate_coef_AR())
+    # a.create_coef_AR()
 
+    template_rem, template_nonrem = read_template_sleep()
 
+    print(template_rem, template_nonrem)
